@@ -1,0 +1,16 @@
+{
+  "name": "enre",
+  "version": "0.1.0",
+  "main": ".eslintrc.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "龙介Longjie",
+  "repository": "github:dragonjie233/enre",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "tdesign-miniprogram": "^1.7.0"
+  }
+}

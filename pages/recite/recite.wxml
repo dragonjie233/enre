@@ -1,0 +1,43 @@
+<view>
+  <view class="area" style="margin-bottom: 18px;padding-top: 20px;">
+    <t-steps layout="horizontal" theme="dot" current="{{tabIndex}}" bind:change="changeTab">
+      <t-step-item title="Glossary"/>
+      <t-step-item title="Order"/>
+      <t-step-item title="Random"/>
+      <!-- <t-step-item title="Review"/> -->
+    </t-steps>
+  </view>
+
+  <view class="area" wx:if="{{tabIndex != 0}}">
+    <view class="input-area-label" bind:tap="readWord">{{curWords[0].pos}} {{curWords[0].cn}}</view>
+    <t-input class="input" placeholder="请输入对应单词" borderless="{{true}}" clearable="{{true}}" confirm-hold="{{true}}" focus cursor-color="#2c2c2c" bind:enter="{{tabIndex == 1 ? 'nextWord' : 'randomWord'}}" value="{{inpVal}}"/>
+    <view class="input-area-msg" wx:if="{{errMsgShow}}">错误，正确单词为{{curWords[0].word}}</view>
+  </view>
+
+  <view class="area-words">
+      <block wx:if="{{ tabIndex == 0 }}">
+        <view wx:for="{{words}}" wx:key="words">
+          <text>{{item.word}}</text>
+          <text>{{item.cn}}</text>
+          <text>{{item.pos}}</text>
+        </view>
+      </block>
+      <block wx:else>
+        <block wx:for="{{words}}" wx:key="words">
+          <block wx:for="{{errRecord}}" wx:key="errRecord" wx:for-item="id">
+            <view wx:if="{{item.id == id}}" style="background: #ffd8d2;color:#d54941;">
+              <text>{{item.word}}</text>
+              <text>{{item.cn}}</text>
+              <text style="color: #ff9285;">{{item.pos}}</text>
+            </view>
+          </block>
+        </block>
+      </block>
+  </view>
+  <view wx:if="{{tabIndex != 0 && tabIndex != 2 && errRecord.length != 0}}" style="margin-top: 18px;text-align: right;">
+    <t-button size="extra-small" bind:tap="deleteSave">Delete save</t-button>
+  </view>
+</view>
+
+<t-dialog id="t-dialog" />
+<t-toast id="t-toast" />

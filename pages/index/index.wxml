@@ -1,0 +1,37 @@
+<view>
+  <view class="header" style="padding: 1px 18px; background-color: #f1f1f1;">
+    <t-button size="small" style="margin: 60px 10px 18px 0;" bind:tap="showTutorial">教程</t-button>
+    <text style="font-size: 2rem;font-weight: bold;color: #181818;margin-bottom: 20px;display: block;">Have you recite words today?</text>
+    <text style="font-size: 1.3rem;color: #5e5e5e;margin-bottom: 18px;display: block;">Please select one word book.</text>
+  </view>
+
+  <t-tabs animation="{{ { duration: 0.6 } }}" defaultValue="Textbook">
+    <block wx:for="{{books}}" wx:key="books" wx:for-index="type" wx:for-item="data">
+      <t-tab-panel label="{{type}}" value="{{type}}">
+        <block wx:for="{{data}}" wx:key="data">
+          <t-button theme="primary" variant="outline" bind:tap="toPage" data-id="{{item.id}}" data-title="{{item.title}}" style="margin: 14px 0 0 14px;">
+            {{item.part == null ? '' : item.part}} {{item.title}}
+          </t-button>
+        </block>
+      </t-tab-panel>
+    </block>
+  </t-tabs>
+</view>
+
+<t-toast id="t-toast" />
+<t-dialog visible="{{showTutorial}}" confirm-btn="{{ { content: '知道了', variant: 'base' } }}" bind:confirm="showTutorial" title="新手教程">
+  <scroll-view slot="content" type="list" scroll-y class="long-content">
+    <view style="margin-top: 24px;">
+      <text style="font-weight: bold;">第一步：</text>
+      <text>在当前页面选择需要练习的单词本；</text>
+    </view>
+    <view>
+      <text style="font-weight: bold;">第二步：</text>
+      <text>进入练习页面后，顶部会显示 Glossary（词汇表）、Order（按顺序）、Random（按随机） 三个过程可以切换，根据自己需求切换到对应部分即可；</text>
+    </view>
+    <view>
+      <text style="font-weight: bold;">特别说明：</text>
+      <text>Order（按顺序）练习会自动记录错词和已练习单词，即使退出了也能回到上一次练习的进度。而 Random（按随机）练习则不会记录任何数据。</text>
+    </view>
+  </scroll-view>
+</t-dialog>

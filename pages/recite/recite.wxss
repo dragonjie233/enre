@@ -1,0 +1,38 @@
+.area {
+  --td-input-vertical-padding: 24rpx;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 12rpx;
+}
+
+.input {
+  border: 2rpx solid #dcdcdc;
+  border-radius: 12rpx;
+}
+.input-area-label {
+  color: rgba(0, 0, 0, 0.9);
+  line-height: 40rpx;
+  margin: 0 8rpx 16rpx;
+}
+.input-area-msg {
+  color: #f6685d;
+  line-height: 40rpx;
+  margin: 16rpx 8rpx 0;
+}
+
+.area-words > view {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-top: 10px;
+  padding: 10px 15px;
+}
+.area-words > view text:nth-child(2),
+.area-words > view text:nth-child(3) {
+  display: block;
+  float: right;
+  margin-left: 8px;
+}
+
+.area-words > view text:nth-child(3) {
+  color: rgba(0, 0, 0, 0.4);
+}
