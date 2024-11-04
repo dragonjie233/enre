@@ -9,7 +9,7 @@
     <block wx:for="{{books}}" wx:key="books" wx:for-index="type" wx:for-item="data">
       <t-tab-panel label="{{type}}" value="{{type}}">
         <block wx:for="{{data}}" wx:key="data">
-          <t-button theme="primary" variant="outline" bind:tap="toPage" data-id="{{item.id}}" data-title="{{item.title}}" style="margin: 14px 0 0 14px;">
+          <t-button theme="primary" variant="outline" bind:tap="toPage" data-id="{{item.id}}" data-title="{{item.title}}" data-part="{{item.part}}" style="margin: 14px 0 0 14px;">
             {{item.part == null ? '' : item.part}} {{item.title}}
           </t-button>
         </block>

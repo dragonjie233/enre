@@ -3,13 +3,15 @@ import { Toast } from 'tdesign-miniprogram';
 
 Page({
   isFirstUse: false,
+  covers: [],
   data: {
     books: {},
     showTutorial: false
   },
   async onLoad() {
     wx.showLoading({ title: 'Loading...' })
-    const books = await request('/wordbook', Toast, this)    
+    const books = await request('/wordbook', Toast, this)
+    this.covers = await request('/sharecover', Toast, this)
     this.setData({ books })
 
     const isFirstUse = wx.getStorageSync('firstUse')
@@ -25,16 +27,18 @@ Page({
       wx.setStorageSync('firstUse', false)
   },
   toPage(e) {
-    const { id, title } = e.target.dataset
+    const { id, title, part } = e.target.dataset
     wx.navigateTo({
-      url: `/pages/recite/recite?wbid=${id}&title=${title}`,
+      url: `/pages/recite/recite?wbid=${id}&t=${title}&p=${part}`,
     })
   },
-  onShareAppMessage() {
+  async onShareAppMessage() {
+    const { title, imgurl } = this.covers[parseInt(Math.random() * this.covers.length, 10)]
+
     return {
-      title: 'ENRE :)',
+      title:  title || '如图所示，还不懂吗？',
       path: '/pages/index/index',
-      imageUrl: '/img/ShareCover.jpg'
+      imageUrl: imgurl
     }
   }
 })

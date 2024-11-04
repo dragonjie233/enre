@@ -16,7 +16,7 @@
 
   <view class="area-words">
       <block wx:if="{{ tabIndex == 0 }}">
-        <view wx:for="{{words}}" wx:key="words">
+        <view wx:for="{{words}}" wx:key="words" bind:tap="readWord" data-w="{{item.word}}">
           <text>{{item.word}}</text>
           <text>{{item.cn}}</text>
           <text>{{item.pos}}</text>

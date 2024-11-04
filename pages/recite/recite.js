@@ -15,7 +15,7 @@ Page({
   },
   async onLoad(args) {
     this.args = args
-    wx.setNavigationBarTitle({ title: args.title })
+    wx.setNavigationBarTitle({ title: args.t })
     const words = await request('/glossary/' + args.wbid, Toast, this)
     const localDB = wx.getStorageSync(args.wbid)
     let data = {
@@ -36,7 +36,8 @@ Page({
     const i = e.detail.current
     let data = {
       tabIndex: i,
-      errMsgShow: false
+      errMsgShow: false,
+      curWords: words
     };
 
     switch(i) {
@@ -137,16 +138,42 @@ Page({
       })
       .catch(() => {})
   },
-  readWord() {
+  readWord(e) {
     let word = this.data.curWords[0].word
+
+    if (e && e.currentTarget.dataset.w)
+      word = e.currentTarget.dataset.w
 
     wx.downloadFile({
       url: 'https://dict.youdao.com/dictvoice?type=0&audio=' + word,
         success: function (res) {
-          let wordAudio = wx.createInnerAudioContext();
-          wordAudio.autoplay = true;
-          wordAudio.src = res.tempFilePath;
+          const audio = wx.createInnerAudioContext()
+          const audioOption = wx.setInnerAudioOption
+
+          if (audioOption) {
+            audioOption({
+              obeyMuteSwitch: false,
+              autoplay: true
+            })
+          } else {
+            audio.obeyMuteSwitch = false
+            audio.autoplay = true
+          }
+
+          audio.src = res.tempFilePath
+          audio.play()
+          audio.onEnded(() => audio.destroy())
        }
     })
+  },
+  onShareAppMessage() {
+    const { wbid, t, p } = this.args
+    const name = p.replace(/\s+/g, '');
+
+    return {
+      title: `来背 ${p} ${t}`,
+      path: `/pages/recite/recite?wbid=${wbid}&t=${t}&p=${p}`,
+      imageUrl: `/img/ShareCover.jpg`
+    }
   }
 })
