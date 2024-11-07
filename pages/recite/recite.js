@@ -4,6 +4,7 @@ import { Toast } from 'tdesign-miniprogram';
 
 Page({
   args: {},
+  readLock: false,
   data: {
     words: [],
     curWords: [],
@@ -11,16 +12,27 @@ Page({
     errRecord: [],
     errMsgShow: false,
     inpVal: '',
-    tabIndex: 1
+    tabIndex: 1,
+    toolbar: {
+      textShow: 'all',
+      pronounce: {
+        func: true,
+        mode: 1
+      }
+    },
+    unhide: {},
+    isReview: false
   },
   async onLoad(args) {
     this.args = args
     wx.setNavigationBarTitle({ title: args.t })
     const words = await request('/glossary/' + args.wbid, Toast, this)
     const localDB = wx.getStorageSync(args.wbid)
+    const toolbar = wx.getStorageSync('toolbar')
     let data = {
       words,
-      curWords: words
+      curWords: words,
+      toolbar: toolbar || this.data.toolbar
     }
 
     if (localDB != '') {
@@ -139,16 +151,21 @@ Page({
       .catch(() => {})
   },
   readWord(e) {
+    const that = this
+    const { func, mode } = this.data.toolbar.pronounce
     let word = this.data.curWords[0].word
 
+    if (!func || this.readLock) return;
     if (e && e.currentTarget.dataset.w)
       word = e.currentTarget.dataset.w
 
     wx.downloadFile({
-      url: 'https://dict.youdao.com/dictvoice?type=0&audio=' + word,
+      url: `https://dict.youdao.com/dictvoice?type=${mode}&audio=${word}`,
         success: function (res) {
           const audio = wx.createInnerAudioContext()
           const audioOption = wx.setInnerAudioOption
+
+          that.readLock = true
 
           if (audioOption) {
             audioOption({
@@ -162,8 +179,52 @@ Page({
 
           audio.src = res.tempFilePath
           audio.play()
-          audio.onEnded(() => audio.destroy())
+          audio.onEnded(() => {
+            audio.destroy()
+            that.readLock = false
+          })
        }
+    })
+  },
+  toolbarHandle(e) {
+    const curData = e.currentTarget.dataset
+    const data = e.target.dataset
+
+    if (JSON.stringify(curData) == JSON.stringify(data)) return;
+
+    let { toolbar, unhide } = this.data
+    const k = curData.k
+    const val = data.v || !toolbar[k][data.k]
+
+    if (data.k)
+      toolbar[k][data.k] = val
+    else
+      toolbar[k] = val
+    
+    if (k == 'textShow')
+      unhide = {}
+    
+    wx.setStorageSync('toolbar', toolbar)
+    this.setData({ toolbar, unhide })
+  },
+  checkHidden(e) {
+    const { id } = e.currentTarget.dataset
+    let { toolbar, unhide } = this.data
+
+    if (toolbar.textShow == 'all') return;
+
+    this.readLock = true
+
+    if (unhide[id]) {
+      delete unhide[id]
+    } else {
+      unhide[id] = true
+    }
+
+    this.setData({
+      unhide
+    }, () => {
+      this.readLock = false
     })
   },
   onShareAppMessage() {

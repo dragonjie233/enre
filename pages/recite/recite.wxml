@@ -2,10 +2,23 @@
   <view class="area" style="margin-bottom: 18px;padding-top: 20px;">
     <t-steps layout="horizontal" theme="dot" current="{{tabIndex}}" bind:change="changeTab">
       <t-step-item title="Glossary"/>
-      <t-step-item title="Order"/>
+      <t-step-item title="{{isReview ? 'Review' : 'Order'}}"/>
       <t-step-item title="Random"/>
       <!-- <t-step-item title="Review"/> -->
     </t-steps>
+  </view>
+
+  <view class="tool-bar">
+    <view wx:if="{{tabIndex == 0}}" bind:tap="toolbarHandle" data-k="textShow">
+      <view class="{{toolbar.textShow == 'all' ? 'selected' : ''}}" data-v="all">全部</view>
+      <view class="{{toolbar.textShow == 'onlyEn' ? 'selected' : ''}}" data-v="onlyEn">仅英</view>
+      <view class="{{toolbar.textShow == 'onlyCn' ? 'selected' : ''}}" data-v="onlyCn">仅中</view>
+    </view>
+    <view style="margin-left: auto;" bind:tap="toolbarHandle" data-k="pronounce">
+      <view class="{{toolbar.pronounce.func ? 'selected' : ''}}" data-k="func">发音</view>
+      <view class="{{toolbar.pronounce.mode == 1 ? 'selected' : ''}}" data-k="mode" data-v="1">英</view>
+      <view class="{{toolbar.pronounce.mode == 0 ? 'selected' : ''}}" data-k="mode" data-v="0">美</view>
+    </view>
   </view>
 
   <view class="area" wx:if="{{tabIndex != 0}}">
@@ -17,9 +30,9 @@
   <view class="area-words">
       <block wx:if="{{ tabIndex == 0 }}">
         <view wx:for="{{words}}" wx:key="words" bind:tap="readWord" data-w="{{item.word}}">
-          <text>{{item.word}}</text>
-          <text>{{item.cn}}</text>
+          <text class="{{toolbar.textShow == 'onlyCn' && !unhide[item.id] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{item.id}}">{{item.word}}</text>
           <text>{{item.pos}}</text>
+          <text class="{{toolbar.textShow == 'onlyEn' && !unhide[item.id] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{item.id}}">{{item.cn}}</text>
         </view>
       </block>
       <block wx:else>
@@ -27,8 +40,8 @@
           <block wx:for="{{errRecord}}" wx:key="errRecord" wx:for-item="id">
             <view wx:if="{{item.id == id}}" style="background: #ffd8d2;color:#d54941;">
               <text>{{item.word}}</text>
+              <text>{{item.pos}}</text>
               <text>{{item.cn}}</text>
-              <text style="color: #ff9285;">{{item.pos}}</text>
             </view>
           </block>
         </block>
