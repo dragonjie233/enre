@@ -1,3 +1,5 @@
+@import '/miniprogram_npm/tdesign-miniprogram/common/style/theme/_index.wxss';
+
 page {
   padding: 18px;
   box-sizing: border-box;

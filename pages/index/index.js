@@ -10,7 +10,13 @@ Page({
   },
   async onLoad() {
     wx.showLoading({ title: 'Loading...' })
-    const books = await request('/wordbook', Toast, this)
+    let books = await request('/books', Toast, this)
+
+    if (books)
+      wx.setStorageSync('tmpBooks', books)
+    else
+      books = wx.getStorageSync('tmpBooks')
+
     this.covers = await request('/sharecover', Toast, this)
     this.setData({ books })
 
@@ -29,7 +35,7 @@ Page({
   toPage(e) {
     const { id, title, part } = e.target.dataset
     wx.navigateTo({
-      url: `/pages/recite/recite?wbid=${id}&t=${title}&p=${part}`,
+      url: `/pages/recite/recite?id=${id}&t=${title}&p=${part}`,
     })
   },
   async onShareAppMessage() {

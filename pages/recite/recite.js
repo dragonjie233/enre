@@ -7,8 +7,7 @@ Page({
   readLock: false,
   data: {
     words: [],
-    curWords: [],
-    record: [],
+    curWord: 0,
     errRecord: [],
     errMsgShow: false,
     inpVal: '',
@@ -24,23 +23,20 @@ Page({
     isReview: false
   },
   async onLoad(args) {
-    this.args = args
     wx.setNavigationBarTitle({ title: args.t })
-    const words = await request('/glossary/' + args.wbid, Toast, this)
-    const localDB = wx.getStorageSync(args.wbid)
-    const toolbar = wx.getStorageSync('toolbar')
+
+    const { glossary } = await request('/glossary/' + args.id, Toast, this)
+    const local = wx.getStorageSync('save')
+
     let data = {
-      words,
-      curWords: words,
-      toolbar: toolbar || this.data.toolbar
+      words: glossary,
+      toolbar: wx.getStorageSync('toolbar') || this.data.toolbar
     }
 
-    if (localDB != '') {
-      data = {...data, ...localDB}
-      if ('record' in localDB)
-        data.curWords = words.filter(item => !localDB.record.includes(item.id))
-    }
+    if (local && local[args.id])
+      data = { ...data, ...local[args.id] }
 
+    this.args = args
     this.setData(data)
   },
   changeTab(e) {
@@ -48,22 +44,24 @@ Page({
     const i = e.detail.current
     let data = {
       tabIndex: i,
-      errMsgShow: false,
-      curWords: words
+      errMsgShow: false
     };
 
     switch(i) {
       case 1:
-        const localDB = wx.getStorageSync(this.args.wbid)
-        if (localDB != '') {
-          data = {...data, ...localDB}
-          if ('record' in localDB)
-            data.curWords = words.filter(item => !localDB.record.includes(item.id))
-        }
+        const local = wx.getStorageSync('save')
+        const { id } = this.args
+        if (local && local != '' && local[id])
+          data = { ...data, ...local[id] }
+        else
+          data = { ...data, ...{
+            curWord: 0,
+            errRecord: []
+          }}
         break;
       case 2:
         const n = this.randomNum(0, words.length)
-        data.curWords = [words[n]]
+        data.curWord = n
         data.errRecord = []
         break;
     }
@@ -71,49 +69,51 @@ Page({
     this.setData(data)
   },
   nextWord({detail}) {
-    const { curWords, record, errRecord } = this.data
-    const { id, word } = curWords[0]
+    const { words, curWord, errRecord } = this.data
+    const word = words[curWord].word.toLowerCase()
     const inpWord = detail.value.toLowerCase()
-    const data = {}
-    
-    data.record = (!record.includes(id)) ? [...record, id] : record
-    data.errRecord = errRecord
+    let data = { errRecord }
 
-    if (inpWord == word.toLowerCase()) {
-      curWords.shift()
-      data.curWords = curWords
+    if (inpWord == word) {
+      data.curWord = curWord + 1
       data.errMsgShow = false
       data.inpVal = ''
       this.readWord()
     } else {
-      if (!errRecord.includes(id))
-        data.errRecord = [...errRecord, id]
+      if (!errRecord.includes(curWord))
+        data.errRecord.push(curWord)
       data.errMsgShow = true
     }
 
-    wx.setStorageSync(this.args.wbid, {
-      record: data.record,
+    const { id } = this.args
+    let local = wx.getStorageSync('save')
+
+    local = local || {}
+    local[id] = {
+      curWord: data.curWord || curWord,
       errRecord: data.errRecord
-    })
-    
+    }
+
+    wx.setStorageSync('save', local)
+
     this.setData(data)
   },
   randomWord({detail}) {
-    const { words, curWords, record, errRecord } = this.data
-    const { id, word } = curWords[0]
+    const { words, curWord, errRecord } = this.data
+    const word = words[curWord].word.toLowerCase()
     const inpWord = detail.value.toLowerCase()
-    const data = {}
+    const data = { errRecord }
 
-    if (inpWord == word.toLowerCase()) {
-      const n = this.randomNum(0, words.length)
+    if (inpWord == word) {
+      const n = this.randomNum(0, words.length - 1)
 
-      data.curWords = [words[n]]
+      data.curWord = n
       data.errMsgShow = false
       data.inpVal = ''
       this.readWord()
     } else {
-      if (!errRecord.includes(id))
-        data.errRecord = [...errRecord, id]
+      if (!errRecord.includes(curWord))
+        data.errRecord.push(curWord)
       data.errMsgShow = true
     }
 
@@ -134,10 +134,11 @@ Page({
 
     Dialog.confirm(dialogConfig)
       .then(() => {
-        wx.removeStorageSync(this.args.wbid)
+        const local = wx.getStorageSync('save')
+        delete local[this.args.id]
+        wx.setStorageSync('save', local)
         this.setData({
-          curWords: this.data.words,
-          record: [],
+          curWord: 0,
           errRecord: [],
           errMsgShow: false,
           inpVal: ''
@@ -153,7 +154,8 @@ Page({
   readWord(e) {
     const that = this
     const { func, mode } = this.data.toolbar.pronounce
-    let word = this.data.curWords[0].word
+    const { words, curWord } = this.data
+    let word = words[curWord].word
 
     if (!func || this.readLock) return;
     if (e && e.currentTarget.dataset.w)

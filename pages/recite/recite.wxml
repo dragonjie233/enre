@@ -22,28 +22,27 @@
   </view>
 
   <view class="area" wx:if="{{tabIndex != 0}}">
-    <view class="input-area-label" bind:tap="readWord">{{curWords[0].pos}} {{curWords[0].cn}}</view>
+    <view class="input-area-label" bind:tap="readWord">{{words[curWord].pos}} {{words[curWord].cn}}</view>
     <t-input class="input" placeholder="请输入对应单词" borderless="{{true}}" clearable="{{true}}" confirm-hold="{{true}}" focus cursor-color="#2c2c2c" bind:enter="{{tabIndex == 1 ? 'nextWord' : 'randomWord'}}" value="{{inpVal}}"/>
-    <view class="input-area-msg" wx:if="{{errMsgShow}}">错误，正确单词为{{curWords[0].word}}</view>
+    <view class="input-area-msg" wx:if="{{errMsgShow}}">错误，正确单词为{{words[curWord].word}}</view>
   </view>
 
   <view class="area-words">
       <block wx:if="{{ tabIndex == 0 }}">
         <view wx:for="{{words}}" wx:key="words" bind:tap="readWord" data-w="{{item.word}}">
-          <text class="{{toolbar.textShow == 'onlyCn' && !unhide[item.id] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{item.id}}">{{item.word}}</text>
+          <text class="{{toolbar.textShow == 'onlyCn' && !unhide[index] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{index}}">{{item.word}}</text>
+          <text>{{item.pho}}</text>
           <text>{{item.pos}}</text>
-          <text class="{{toolbar.textShow == 'onlyEn' && !unhide[item.id] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{item.id}}">{{item.cn}}</text>
+          <text class="{{toolbar.textShow == 'onlyEn' && !unhide[index] ? 'hidden' : ''}}" bind:tap="checkHidden" data-id="{{index}}">{{item.cn}}</text>
         </view>
       </block>
       <block wx:else>
-        <block wx:for="{{words}}" wx:key="words">
-          <block wx:for="{{errRecord}}" wx:key="errRecord" wx:for-item="id">
-            <view wx:if="{{item.id == id}}" style="background: #ffd8d2;color:#d54941;">
-              <text>{{item.word}}</text>
-              <text>{{item.pos}}</text>
-              <text>{{item.cn}}</text>
-            </view>
-          </block>
+        <block wx:for="{{errRecord}}" wx:key="errRecord" wx:for-item="id">
+          <view style="background: #ffd8d2;color:#d54941;">
+            <text>{{words[id].word}}</text>
+            <text>{{words[id].pos}}</text>
+            <text>{{words[id].cn}}</text>
+          </view>
         </block>
       </block>
   </view>

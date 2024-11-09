@@ -7,13 +7,17 @@
 
   <t-tabs animation="{{ { duration: 0.6 } }}" defaultValue="Textbook">
     <block wx:for="{{books}}" wx:key="books" wx:for-index="type" wx:for-item="data">
-      <t-tab-panel label="{{type}}" value="{{type}}">
-        <block wx:for="{{data}}" wx:key="data">
-          <t-button theme="primary" variant="outline" bind:tap="toPage" data-id="{{item.id}}" data-title="{{item.title}}" data-part="{{item.part}}" style="margin: 14px 0 0 14px;">
-            {{item.part == null ? '' : item.part}} {{item.title}}
+      <block wx:for="{{data}}" wx:key="data" wx:for-item="book">
+        <t-tab-panel label="{{type}}" value="{{type}}" style="padding-left: 8px;padding-right: 18px;margin-top: 18px;">
+          <text style="display: block;margin-left: 10px;background: var(--td-primary-color-7);color: var(--td-text-color-anti);border-radius: 12rpx;padding: 12rpx 32rpx;">{{book.name}}</text>
+          <t-button theme="primary" variant="outline" bind:tap="toPage"
+            style="margin: 10px 0 0 10px"
+            data-id="{{item.id}}" data-title="{{item.name}}" data-part="{{book.name}}"
+            wx:for="{{book.chapters}}" wx:key="chapters">
+            {{item.name}}
           </t-button>
-        </block>
-      </t-tab-panel>
+        </t-tab-panel>
+      </block>
     </block>
   </t-tabs>
 </view>
