@@ -34,8 +34,8 @@
       <text>进入练习页面后，顶部会显示 Glossary（词汇表）、Order（按顺序）、Random（按随机） 三个过程可以切换，根据自己需求切换到对应部分即可；</text>
     </view>
     <view>
-      <text style="font-weight: bold;">特别说明：</text>
-      <text>Order（按顺序）练习会自动记录错词和已练习单词，即使退出了也能回到上一次练习的进度。而 Random（按随机）练习则不会记录任何数据。</text>
+      <text style="font-weight: bold;">Order 练习：</text>
+      <text>会自动记录错词和已练习单词，即使退出了也能回到上一次练习的进度。而 Random（按随机）练习则不会记录任何数据。除此之外，Order 练习会在你背完词汇表所有单词后自动进入错词 Review（复习）步骤。</text>
     </view>
   </scroll-view>
 </t-dialog>

@@ -60,7 +60,7 @@ Page({
           }}
         break;
       case 2:
-        const n = this.randomNum(0, words.length)
+        const n = this.randomNum(0, words.length - 1)
         data.curWord = n
         data.errRecord = []
         break;
@@ -69,16 +69,34 @@ Page({
     this.setData(data)
   },
   nextWord({detail}) {
-    const { words, curWord, errRecord } = this.data
+    const { words, curWord, errRecord, isReview } = this.data
     const word = words[curWord].word.toLowerCase()
     const inpWord = detail.value.toLowerCase()
-    let data = { errRecord }
+    let data = { errRecord, isReview }
 
     if (inpWord == word) {
       data.curWord = curWord + 1
+
+      if (data.curWord >= words.length || isReview) {
+        if (data.errRecord.length) {
+          data.isReview = true
+          data.curWord = data.errRecord.shift()
+        } else {
+          Dialog.confirm({
+            context: this,
+            title: 'All words are OK',
+            closeOnOverlayClick: true,
+            content: '当前单词表已背完，重置后可重复背单词',
+            confirmBtn: 'OK :)'
+          })
+          data.isReview = false
+          data.curWord = 0
+          data.errRecord = []
+        }
+      }
+
       data.errMsgShow = false
       data.inpVal = ''
-      this.readWord()
     } else {
       if (!errRecord.includes(curWord))
         data.errRecord.push(curWord)
@@ -90,13 +108,17 @@ Page({
 
     local = local || {}
     local[id] = {
-      curWord: data.curWord || curWord,
-      errRecord: data.errRecord
+      curWord: 'curWord' in data ? data.curWord : curWord,
+      errRecord: data.errRecord,
+      isReview: data.isReview
     }
 
     wx.setStorageSync('save', local)
 
     this.setData(data)
+
+    if (!data.errMsgShow)
+      this.readWord()
   },
   randomWord({detail}) {
     const { words, curWord, errRecord } = this.data
