@@ -23,7 +23,7 @@
 
   <view class="area" wx:if="{{tabIndex != 0}}">
     <view class="input-area-label" bind:tap="readWord">{{words[curWord].pos}} {{words[curWord].cn}}</view>
-    <t-input class="input" placeholder="请输入对应单词" borderless="{{true}}" clearable="{{true}}" confirm-hold="{{true}}" focus cursor-color="#2c2c2c" bind:enter="{{tabIndex == 1 ? 'nextWord' : 'randomWord'}}" value="{{inpVal}}"/>
+    <t-input class="input" placeholder="请输入对应单词" borderless="{{true}}" clearable="{{true}}" confirm-hold="{{true}}" focus cursor-color="#777777" bind:enter="{{tabIndex == 1 ? 'nextWord' : 'randomWord'}}" value="{{inpVal}}"/>
     <view class="input-area-msg" wx:if="{{errMsgShow}}">错误，正确单词为{{words[curWord].word}}</view>
   </view>
 
@@ -38,7 +38,7 @@
       </block>
       <block wx:else>
         <block wx:for="{{errRecord}}" wx:key="errRecord" wx:for-item="id">
-          <view style="background: #ffd8d2;color:#d54941;">
+          <view class="err-word">
             <text>{{words[id].word}}</text>
             <text>{{words[id].pos}}</text>
             <text>{{words[id].cn}}</text>

@@ -3,5 +3,6 @@
 page {
   padding: 18px;
   box-sizing: border-box;
-  background-color: #f1f1f1;
+  background-color: var(--td-bg-color-page);
+  color: var(--td-text-color-primary);
 }

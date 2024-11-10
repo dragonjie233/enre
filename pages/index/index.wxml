@@ -1,8 +1,8 @@
 <view>
-  <view class="header" style="padding: 1px 18px; background-color: #f1f1f1;">
-    <t-button size="small" style="margin: 60px 10px 18px 0;" bind:tap="showTutorial">教程</t-button>
-    <text style="font-size: 2rem;font-weight: bold;color: #181818;margin-bottom: 20px;display: block;">Have you recite words today?</text>
-    <text style="font-size: 1.3rem;color: #5e5e5e;margin-bottom: 18px;display: block;">Please select one word book.</text>
+  <view class="header">
+    <t-button size="small" bind:tap="showTutorial">教程</t-button>
+    <text class="title">Have you recite words today?</text>
+    <text class="subtitle">Please select one word book.</text>
   </view>
 
   <t-tabs animation="{{ { duration: 0.6 } }}" defaultValue="Textbook">

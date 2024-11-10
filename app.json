@@ -9,11 +9,13 @@
     "t-toast": "tdesign-miniprogram/toast/toast"
   },
   "window": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "@text-color-primary",
     "navigationBarTitleText": "ENRE",
-    "navigationBarBackgroundColor": "#ffffff",
-    "backgroundColor": "#f1f1f1"
+    "navigationBarBackgroundColor": "@bg-color-container",
+    "backgroundColor": "@bg-color-container"
   },
+  "darkmode": true,
+  "themeLocation": "util/theme.json",
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
